@@ -1,5 +1,11 @@
-import {defineStore, StoreDefinition} from 'pinia';
+import {defineStore} from 'pinia';
+import {mockDailyReports} from "./DailyReportMockData";
 
+export interface DailyReportState {
+    dailyReports: DailyReport[];
+    filter: 'all' | 'byDate' | 'byTitle';
+    nextId: number;
+}
 
 export interface DailyReport {
     id: number;
@@ -9,13 +15,7 @@ export interface DailyReport {
     isClosed: boolean;
 }
 
-export interface DailyReportState {
-    dailyReports: DailyReport[];
-    filter: 'all' | 'byDate' | 'byTitle';
-    nextId: number;
-}
-
-export const useDailyReports: StoreDefinition = defineStore('dailyReports', {
+export const useDailyReports = defineStore('dailyReports', {
     state: (): DailyReportState => ({
         dailyReports: [],
         filter: 'all',
@@ -38,27 +38,11 @@ export const useDailyReports: StoreDefinition = defineStore('dailyReports', {
         addDailyReport(dailyReport: DailyReport): void {
             this.dailyReports.push({...dailyReport, id: this.nextId++});
         },
-        async fetchMockDailyReports(): Promise<void> {
-            const promise: Promise<DailyReport[]> = new Promise((resolve: (value: (PromiseLike<DailyReport[]> | DailyReport[])) => void): void => {
-                resolve([
-                    {
-                        id: 1,
-                        date: Date.UTC(2023, 12, 22),
-                        title: 'EW-1052 Stuff to do in Frontend',
-                        content: '#Markdown content for frontend ticket',
-                        isClosed: false
-                    },
-                    {
-                        id: 2,
-                        date: Date.UTC(2023, 12, 23),
-                        title: 'EX-654 Stuff to do in Backend',
-                        content: '#Markdown content for backend ticket',
-                        isClosed: false
-                    },
-                ])
-            })
-
-            this.dailyReports = await promise
+        async fetchDailyReports(): Promise<void> {
+            const promise: Promise<DailyReport[]> = new Promise((resolve): void => {
+                resolve(mockDailyReports);
+            });
+            this.dailyReports = await promise;
         },
     },
 });
